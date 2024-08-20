@@ -44,7 +44,8 @@ return new class extends Migration
             $table->time('horario_reserva');
             $table->string('status');
             $table->string('valor_total');
-            $table->string('observacoes')->nullable();     
+            $table->string('observacoes')->nullable();
+            $table->boolean('transporte')->nullable();     
         });
 
         Schema::create('raca', function(Blueprint $table) {
@@ -81,6 +82,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('users');
+        Schema::dropIfExists('pets');
+        Schema::dropIfExists('agendamentos');
+        Schema::dropIfExists('raca');
+        Schema::dropIfExists('status');
+        Schema::dropIfExists('funcionarios');
+        Schema::dropIfExists('produtos');
     }
 };
