@@ -25,8 +25,8 @@ Route::post('/auth/login', [AuthController::class, 'login']); // acessivel apena
 Route::post('/auth/register', [AuthController::class, 'register']); // acessivel apenas quando n está logado
 
 Route::middleware('auth:api')->group(function() { // apenas se estiver logado
-    Route::post('/auth/validate'. [AuthController::class, 'validateToken']);
-    Route::post('/auth/logout'. [AuthController::class, 'logout']);
+    Route::post('/auth/validate', [AuthController::class, 'validateToken']);
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     
     Route::resource('/pets', 'App\Http\Controllers\PetsController');
