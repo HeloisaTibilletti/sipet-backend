@@ -22,25 +22,25 @@ class AuthController extends Controller
 
         $validator = Validator::make($request->all(), [
             'usuario' => 'required|string|unique:users,usuario',
-            'password' => 'required',
-            'password_confirm' => 'required|same:password'
+            'senha' => 'required',
+            'senha_confirm' => 'required|same:senha'
 
         ]);
 
         if(!$validator->fails()) {
             $usuario = $request->input('usuario');
-            $password = $request->input('password');
+            $senha = $request->input('senha');
 
-            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $hash = password_hash($senha, PASSWORD_DEFAULT);
 
             $newUser = new User();
             $newUser->usuario = $usuario;
-            $newUser->password = $hash;
+            $newUser->senha = $hash;
             $newUser->save();
 
             $token = auth()->attempt([
                 'usuario' => $usuario,
-                'password' => $password
+                'senha' => $senha
             ]);
 
             if(!$token) {
@@ -66,7 +66,7 @@ class AuthController extends Controller
     // Valida os dados de entrada
     $validator = Validator::make($request->all(), [
         'usuario' => 'required|string',
-        'password' => 'required'
+        'senha' => 'required'
     ]);
 
     if ($validator->fails()) {
@@ -74,7 +74,7 @@ class AuthController extends Controller
     }
 
     // Tenta autenticar o usuário
-    $credentials = $request->only('usuario', 'password');
+    $credentials = $request->only('usuario', 'senha');
     $token = auth()->attempt($credentials);
 
     if (!$token) {
