@@ -61,7 +61,7 @@ return new class extends Migration
 
         Schema::create('status', function(Blueprint $table) {
             $table->id();
-            $table->string('status');
+            $table->string('nome');
         });
 
         Schema::create('funcionarios', function(Blueprint $table) {

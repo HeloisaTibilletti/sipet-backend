@@ -31,10 +31,32 @@ Route::middleware('auth:api')->group(function() { // apenas se estiver logado
     
     Route::resource('/pets', 'App\Http\Controllers\PetsController');
     Route::resource('/funcionario', 'App\Http\Controllers\FuncionarioController');
-    Route::resource('/cliente', 'App\Http\Controllers\ClienteController');
-    Route::resource('/status', 'App\Http\Controllers\StatusController');
     Route::resource('/agendamento', 'App\Http\Controllers\AgendamentoController');
-    Route::resource('/produtos', 'App\Http\Controllers\ProdutosController');
     Route::resource('/user', 'App\Http\Controllers\UserController');
+
+    // RAÇAS
+    Route::get('/racas', [RacaController::class, 'getAll']);
+    Route::post('/racas', [RacaController::class, 'insert']);
+    Route::put('/racas/{id}', [RacaController::class, 'update']);
+    Route::delete('/racas/{id}', [RacaController::class, 'delete']);
+
+    // STATUS
+    Route::get('/status', [StatusController::class, 'getAll']);
+    Route::post('/status', [StatusController::class, 'insert']);
+    Route::put('/status/{id}', [StatusController::class, 'update']);
+    Route::delete('/status/{id}', [StatusController::class, 'delete']);
+
+    // PRODUTOS
+    Route::get('/produtos', [ProdutoController::class, 'getAll']);
+    Route::post('/produtos', [ProdutoController::class, 'insert']);
+    Route::put('/produtos/{id}', [ProdutoController::class, 'update']);
+    Route::delete('/produtos/{id}', [ProdutoController::class, 'delete']);
+
+    // CLIENTES
+    Route::get('/clientes', [ClienteController::class, 'getAll']);
+    Route::post('/clientes', [ClienteController::class, 'insert']);
+    Route::put('/clientes/{id}', [ClienteController::class, 'update']);
+    Route::delete('/clientes/{id}', [ClienteController::class, 'delete']);
+
 });
 

@@ -9,5 +9,5 @@ class Cliente extends Model
 {
     use HasFactory;
 
-    public $timestramps = false;
+    public $timestamps = false;
 }

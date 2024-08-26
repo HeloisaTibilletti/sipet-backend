@@ -9,5 +9,5 @@ class Funcionario extends Model
 {
     use HasFactory;
 
-    public $timestramps = false;
+    public $timestamps = false;
 }

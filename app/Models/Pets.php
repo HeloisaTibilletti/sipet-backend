@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class pets extends Model
+class Pets extends Model
 {
     use HasFactory;
 
-    public $timestramps = false;
+    public $timestamps = false;
 }
