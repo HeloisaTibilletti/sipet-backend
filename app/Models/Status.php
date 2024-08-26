@@ -11,4 +11,9 @@ class Status extends Model
 
     protected $table = 'status';
     public $timestamps = false;
+
+    public function agendamentos()
+    {
+        return $this->hasMany(Agendamento::class, 'id_status');
+    }
 }

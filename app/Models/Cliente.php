@@ -10,4 +10,15 @@ class Cliente extends Model
     use HasFactory;
 
     public $timestamps = false;
+
+
+    public function pets()
+    {
+        return $this->hasMany(Pets::class);
+    }
+
+    public function agendamentos()
+    {
+        return $this->hasMany(Agendamento::class, 'id_cliente');
+    }
 }

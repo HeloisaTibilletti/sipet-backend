@@ -14,4 +14,16 @@ class Raca extends Model
     protected $fillable = [
         'nome',
     ];
+
+    public function agendamentos()
+    {
+        return $this->hasMany(Agendamento::class, 'id_raca');
+    }
+
+    // Relacionamento com a model Pet
+    public function pets()
+    {
+        return $this->hasMany(Pets::class, 'raca_id');
+    }
 }
+

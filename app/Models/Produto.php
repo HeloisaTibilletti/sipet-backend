@@ -10,4 +10,9 @@ class Produto extends Model
     use HasFactory;
 
     public $timestamps = false;
+
+    public function agendamentos()
+    {
+        return $this->hasMany(Agendamento::class, 'id_produto');
+    }
 }

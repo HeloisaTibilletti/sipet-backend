@@ -31,11 +31,13 @@ class FuncionarioController extends Controller
 
         // Validação dos dados de entrada
         $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8',
             'nome' => 'required|string|max:255',
             'sobrenome' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:clientes,email',
-            'endereco' => 'required|string|max:255',
-            'telefone' => 'required|digits_between:8,15'
+            'telefone' => 'required|digits_between:8,15',
+            'funcao' => 'required|string|max:255',
+            'data_nasc' => 'required|date'
         ]);
 
         if ($validator->fails()) {
@@ -50,14 +52,19 @@ class FuncionarioController extends Controller
             $email = $request->input('email');
             $endereco = $request->input('endereco');
             $telefone = $request->input('telefone');
+            $funcao = $request->input('funcao');
+            $data_nasc = $request->input('data_nasc');
+            
 
-            $newCliente = new Cliente();
-            $newCliente->nome = $nome;
-            $newCliente->sobrenome = $sobrenome;
-            $newCliente->email = $email;
-            $newCliente->endereco = $endereco;
-            $newCliente->telefone = $telefone;
-            $newCliente->save();
+            $newFuncionario = new Funcionario();
+            $newFuncionario->nome = $nome;
+            $newFuncionario->sobrenome = $sobrenome;
+            $newFuncionario->email = $email;
+            $newFuncionario->endereco = $endereco;
+            $newFuncionario->telefone = $telefone;
+            $newFuncionario->funcao = $funcao;
+            $newFuncionario->data_nasc = $data_nasc;
+            $newFuncionario->save();
 
             // Adiciona uma mensagem de sucesso
             $array['success'] = 'Registro inserido com sucesso!';
@@ -88,20 +95,22 @@ class FuncionarioController extends Controller
 
         try {
             // Encontra o registro pelo ID
-            $cliente = Cliente::find($id);
+            $funcionario = Funcionario::find($id);
 
-            if (!$cliente) {
+            if (!$funcionario) {
                 $array['error'] = 'Registro não encontrado.';
                 return $array;
             }
 
             // Atualiza o registro com os novos dados
-            $cliente->nome = $request->input('nome');
-            $cliente = $request->input('sobrenome');
-            $cliente = $request->input('email');
-            $cliente = $request->input('endereco');
-            $cliente = $request->input('telefone');
-            $cliente->save();
+            $funcionario = $request->input('nome');
+            $funcionario = $request->input('sobrenome');
+            $funcionario = $request->input('email');
+            $funcionario = $request->input('endereco');
+            $funcionario = $request->input('telefone');
+            $funcionario = $request->input('funcao');
+            $funcionario = $request->input('data_nasc');
+            $funcionario->save();
 
             $array['success'] = 'Registro atualizado com sucesso!';
         } catch (\Exception $e) {
@@ -115,15 +124,15 @@ class FuncionarioController extends Controller
 
         try {
             // Encontra o registro pelo ID
-            $cliente = Cliente::find($id);
+            $funcionario = Funcionario::find($id);
 
-            if (!$cliente) {
+            if (!$funcionario) {
                 $array['error'] = 'Registro não encontrado.';
                 return $array;
             }
 
             // Deleta o registro
-            $cliente->delete();
+            $funcionario->delete();
 
             $array['success'] = 'Registro deletado com sucesso!';
         } catch (\Exception $e) {
