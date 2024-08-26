@@ -81,7 +81,13 @@ return new class extends Migration
             $table->string('nome');
             $table->float('valor');
         });
+
+        Schema::create('funcao', function(Blueprint $table) {
+            $table->id();
+            $table->string('nome');
+        });
     }
+    
 
     /**
      * Reverse the migrations.
@@ -95,5 +101,6 @@ return new class extends Migration
         Schema::dropIfExists('status');
         Schema::dropIfExists('funcionarios');
         Schema::dropIfExists('produtos');
+        Schema::dropIfExists('funcao');
     }
 };

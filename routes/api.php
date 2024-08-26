@@ -30,7 +30,6 @@ Route::middleware('auth:api')->group(function() { // apenas se estiver logado
 
     
     Route::resource('/pets', 'App\Http\Controllers\PetsController');
-    Route::resource('/funcionario', 'App\Http\Controllers\FuncionarioController');
     Route::resource('/agendamento', 'App\Http\Controllers\AgendamentoController');
     Route::resource('/user', 'App\Http\Controllers\UserController');
 
@@ -53,10 +52,15 @@ Route::middleware('auth:api')->group(function() { // apenas se estiver logado
     Route::delete('/produtos/{id}', [ProdutoController::class, 'delete']);
 
     // CLIENTES
-    Route::get('/clientes', [ClienteController::class, 'getAll']);
+    Route::get('/clientes', [ClienteController::class, 'getAll']); 
     Route::post('/clientes', [ClienteController::class, 'insert']);
     Route::put('/clientes/{id}', [ClienteController::class, 'update']);
     Route::delete('/clientes/{id}', [ClienteController::class, 'delete']);
 
+    // FUNCIONÁRIOS
+    Route::get('/funcionarios', [FuncionarioController::class, 'getAll']);
+    Route::post('/funcionarios', [FuncionarioController::class, 'insert']);
+    Route::put('/funcionarios/{id}', [FuncionarioController::class, 'update']);
+    Route::delete('/funcionarios/{id}', [FuncionarioController::class, 'delete']);
 });
 
