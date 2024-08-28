@@ -15,7 +15,7 @@ class Pets extends Model
 
     public function raca()
     {
-        return $this->belongsTo(Raca::class, 'raca', 'id');
+        return $this->belongsTo(Raca::class, 'raca_id', 'id');
     }
 
     // Define the relationship with Cliente

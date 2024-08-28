@@ -13,7 +13,7 @@ class Agendamento extends Model
         'id_cliente',
         'id_pet',
         'id_raca',
-        'id_funcionario',
+        'id_user',
         'data_reserva',
         'horario_reserva',
         'status',
@@ -41,9 +41,9 @@ class Agendamento extends Model
     }
 
     // Relacionamento com a model Funcionario
-    public function funcionario()
+    public function user()
     {
-        return $this->belongsTo(Funcionario::class, 'id_funcionario');
+        return $this->belongsTo(User::class, 'id_funcionario');
     }
 
     public function produto()

@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\FuncaoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClienteController;
@@ -28,10 +29,16 @@ Route::middleware('auth:api')->group(function() { // apenas se estiver logado
     Route::post('/auth/validate', [AuthController::class, 'validateToken']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
-    
-    Route::resource('/pets', 'App\Http\Controllers\PetsController');
-    Route::resource('/agendamento', 'App\Http\Controllers\AgendamentoController');
-    Route::resource('/user', 'App\Http\Controllers\UserController');
+    // PETS
+    Route::get('/pets', [PetsController::class, 'getAll']);
+    Route::post('/pets', [PetsController::class, 'insert']);
+    Route::delete('/pets/{id}', [PetsController::class, 'cancel']);
+
+    // AGENDAMENTO
+    Route::get('/agendamentos', [AgendamentoController::class, 'getAll']);
+    Route::post('/agendamentos', [AgendamentoController::class, 'insert']);
+    Route::put('/agendamentos/{id}', [AgendamentoController::class, 'update']);
+    Route::delete('/agendamentos/{id}', [AgendamentoController::class, 'delete']);
 
     // RAÇAS
     Route::get('/racas', [RacaController::class, 'getAll']);
@@ -58,9 +65,10 @@ Route::middleware('auth:api')->group(function() { // apenas se estiver logado
     Route::delete('/clientes/{id}', [ClienteController::class, 'delete']);
 
     // FUNCIONÁRIOS
-    Route::get('/funcionarios', [FuncionarioController::class, 'getAll']);
-    Route::post('/funcionarios', [FuncionarioController::class, 'insert']);
-    Route::put('/funcionarios/{id}', [FuncionarioController::class, 'update']);
-    Route::delete('/funcionarios/{id}', [FuncionarioController::class, 'delete']);
-});
+    Route::get('/funcao', [FuncaoController::class, 'getAll']);
+    Route::post('/funcao', [FuncaoController::class, 'insert']);
+    Route::put('/funcao/{id}', [FuncaoController::class, 'update']);
+    Route::delete('/funcao/{id}', [FuncaoController::class, 'delete']);
 
+    Route::get('/user', [UserController::class, 'getAll']);
+});

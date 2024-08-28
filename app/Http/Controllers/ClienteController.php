@@ -44,21 +44,22 @@ class ClienteController extends Controller
         }
 
         try {
-            // Criação de um novo registro
+            // Criação de um novo usuário
             $nome = $request->input('nome');
             $sobrenome = $request->input('sobrenome');
             $email = $request->input('email');
-            $endereco = $request->input('endereco');
-            $telefone = $request->input('telefone');
-
+            $endereco = $request->input('endereco');    
+            $telefone = $request->input('telefone');   
+    
             $newCliente = new Cliente();
             $newCliente->nome = $nome;
             $newCliente->sobrenome = $sobrenome;
             $newCliente->email = $email;
             $newCliente->endereco = $endereco;
             $newCliente->telefone = $telefone;
-            $newCliente->save();
 
+            $newCliente->save(); 
+    
             // Adiciona uma mensagem de sucesso
             $array['success'] = 'Registro inserido com sucesso!';
         } catch (\Exception $e) {

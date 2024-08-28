@@ -9,8 +9,8 @@ class Funcao extends Model
 {
     use HasFactory;
 
-    public function funcionarios()
+    public function user()
     {
-        return $this->hasMany(Funcionario::class, 'id_funcao');
+        return $this->belongsTo(Funcao::class);
     }
 }

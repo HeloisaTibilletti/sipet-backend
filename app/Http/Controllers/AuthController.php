@@ -18,55 +18,62 @@ class AuthController extends Controller
     }
 
     public function register(Request $request) {
-        $array = ['error' => ''];
-
         $validator = Validator::make($request->all(), [
-            'usuario' => 'required|string|unique:users,usuario',
-            'senha' => 'required',
-            'senha_confirm' => 'required|same:senha'
-
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8',
+            'password_confirm' => 'required|same:password',
+            'nome' => 'required|string|max:255',
+            'sobrenome' => 'required|string|max:255',
+            'telefone' => 'required|digits_between:8,15',
+            'funcao' => 'required|exists:funcao,id',
         ]);
 
-        if(!$validator->fails()) {
-            $usuario = $request->input('usuario');
-            $senha = $request->input('senha');
-
-            $hash = password_hash($senha, PASSWORD_DEFAULT);
-
-            $newUser = new User();
-            $newUser->usuario = $usuario;
-            $newUser->senha = $hash;
-            $newUser->save();
-
-            $token = auth()->attempt([
-                'usuario' => $usuario,
-                'senha' => $senha
-            ]);
-
-            if(!$token) {
-                $array['error'] = 'Ocorreu um erro interno.';
-                return $array;
-            }
-
-            $array['token'] = $token;
-
-            $user = auth()->user();
-            $array['user'] = $user;
-
-
-        } else {
-            $array['error'] = $validator->errors()->first();
-            return $array;
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->first()
+            ], 400);
         }
 
-        return $array;
+        $nome = $request->input('nome');
+        $sobrenome = $request->input('sobrenome');
+        $telefone = $request->input('telefone');
+        $email = $request->input('email');
+        $password = $request->input('password');
+        $funcao = $request->input('funcao');
+        
+        $hash = bcrypt($password);
+        
+        $newUser = new User();
+        $newUser->nome = $nome;
+        $newUser->sobrenome = $sobrenome;
+        $newUser->telefone = $telefone;
+        $newUser->email = $email;
+        $newUser->password = $hash;
+        $newUser->id_funcao = $funcao;
+        $newUser->save();
+
+        $token = auth()->attempt([
+            'email' => $email,
+            'password' => $password
+        ]);
+
+        if (!$token) {
+            return response()->json([
+                'error' => 'Ocorreu um erro interno.'
+            ], 500);
+        }
+
+        return response()->json([
+            'token' => $token,
+            'user' => auth()->user()
+        ], 201);
     }
 
    public function login(Request $request) {
     // Valida os dados de entrada
     $validator = Validator::make($request->all(), [
-        'usuario' => 'required|string',
-        'senha' => 'required'
+        'email' => 'required|string',
+        'password' => 'required'
     ]);
 
     if ($validator->fails()) {
@@ -74,11 +81,11 @@ class AuthController extends Controller
     }
 
     // Tenta autenticar o usuário
-    $credentials = $request->only('usuario', 'senha');
+    $credentials = $request->only('email', 'password');
     $token = auth()->attempt($credentials);
 
     if (!$token) {
-        return response()->json(['error' => 'Usuário e/ou senha estão incorretos.'], 401);
+        return response()->json(['error' => 'Email e/ou senha estão incorretos.'], 401);
     }
 
     // Retorna o token e as informações do usuário

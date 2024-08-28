@@ -8,6 +8,7 @@ use App\Models\Raca;
 
 class RacaController extends Controller
 {
+
     public function getAll() {
         $array = ['error' => ''];
 

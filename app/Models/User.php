@@ -28,8 +28,8 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function funcionario()
+    public function funcao()
     {
-        return $this->hasOne(Funcionario::class, 'id_user');
+        return $this->belongsTo(Funcao::class, 'id_funcao');
     }
 }

@@ -33,7 +33,7 @@ class PetsController extends Controller
         $validator = Validator::make($request->all(), [
             'nome' => 'required|string|max:255',
             'data_nasc' => 'required|date',
-            'raca' => 'required|exists:racas,id',
+            'raca_id' => 'required|exists:racas,id',
             'sexo' => 'required|string|in:M,F', // M para macho, F para fêmea (ajuste conforme necessário)
             'especie' => 'required|string|max:255',
             'porte' => 'required|string|max:255', // Pode ser 'Pequeno', 'Médio', 'Grande', etc.
@@ -50,7 +50,7 @@ class PetsController extends Controller
                     // Criação de um novo registro
                     $nome = $request->input('nome');
                     $dataNasc = $request->input('data_nasc');
-                    $racaId = $request->input('raca_id'); // Assumindo que `raca_id` é a chave estrangeira
+                    $raca_id = $request->input('raca_id'); // Assumindo que `raca_id` é a chave estrangeira
                     $sexo = $request->input('sexo');
                     $especie = $request->input('especie');
                     $porte = $request->input('porte');
@@ -61,7 +61,7 @@ class PetsController extends Controller
                     $newPet = new Pets();
                     $newPet->nome = $nome;
                     $newPet->data_nasc = $dataNasc;
-                    $newPet->raca_id = $racaId;
+                    $newPet->raca_id = $raca_id;
                     $newPet->sexo = $sexo;
                     $newPet->especie = $especie;
                     $newPet->porte = $porte;
