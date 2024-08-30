@@ -22,7 +22,7 @@ class FuncaoController extends Controller
             $array['error'] = $e->getMessage();
         }
 
-        return $array;
+        return response()->json($array);
     }
 
 

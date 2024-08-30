@@ -23,7 +23,7 @@ class RacaController extends Controller
             $array['error'] = $e->getMessage();
         }
 
-        return $array;
+        return response()->json($array);
     }
 
 
@@ -89,6 +89,8 @@ class RacaController extends Controller
             // Captura e exibe o erro se algo der errado
             $array['error'] = 'Ocorreu um erro ao atualizar o registro: ' . $e->getMessage();
         }
+
+        return response()->json($array);
     }
 
     public function delete($id) {
