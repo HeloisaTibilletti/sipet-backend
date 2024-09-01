@@ -50,12 +50,16 @@ class RacaController extends Controller
 
             // Adiciona uma mensagem de sucesso
             $array['success'] = 'Registro inserido com sucesso!';
+            $array['data'] = [
+                'id' => $newRaca->id,
+                'nome' => $newRaca->nome
+            ];
         } catch (\Exception $e) {
             // Captura e exibe o erro se algo der errado
             $array['error'] = 'Ocorreu um erro ao inserir o registro: ' . $e->getMessage();
         }
 
-        return $array;
+        return response()->json($array);
     }
 
     public function update($id, Request $request) {
@@ -95,25 +99,27 @@ class RacaController extends Controller
 
     public function delete($id) {
         $array = ['error' => '', 'success' => ''];
-
+    
         try {
             // Encontra o registro pelo ID
             $raca = Raca::find($id);
-
+    
             if (!$raca) {
                 $array['error'] = 'Registro não encontrado.';
-                return $array;
+                return response()->json($array);
             }
-
+    
             // Deleta o registro
             $raca->delete();
-
+    
             $array['success'] = 'Registro deletado com sucesso!';
         } catch (\Exception $e) {
             // Captura e exibe o erro se algo der errado
             $array['error'] = 'Ocorreu um erro ao deletar o registro: ' . $e->getMessage();
         }
-
-        return $array;
+    
+        return response()->json($array);
     }
+    
+    
 }

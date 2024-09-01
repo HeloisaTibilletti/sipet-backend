@@ -47,48 +47,57 @@ class StatusController extends Controller
             $newStatus->nome = $nome;
             $newStatus->save();
 
-            // Adiciona uma mensagem de sucesso
-            $array['success'] = 'Registro inserido com sucesso!';
+             // Adiciona uma mensagem de sucesso
+             $array['success'] = 'Registro inserido com sucesso!';
+             $array['data'] = [
+                 'id' => $newStatus->id,
+                 'nome' => $newStatus->nome
+             ];
         } catch (\Exception $e) {
             // Captura e exibe o erro se algo der errado
             $array['error'] = 'Ocorreu um erro ao inserir o registro: ' . $e->getMessage();
         }
 
-        return $array;
+        return response()->json($array);
     }
 
-    public function update($id, Request $request) {
-        $array = ['error' => '', 'success' => ''];
-
+    public function update(Request $request, $id) {
+        $array = ['error' => ''];
+    
         // Validação dos dados de entrada
         $validator = Validator::make($request->all(), [
-            'nome' => 'required|string|max:255'
+            'nome' => 'required|string|max:255',
         ]);
-
+    
         if ($validator->fails()) {
             $array['error'] = $validator->errors()->first();
-            return $array;
+            return response()->json($array);
         }
-
+    
         try {
-            // Encontra o registro pelo ID
+            // Atualização do registro
             $status = Status::find($id);
-
+    
             if (!$status) {
-                $array['error'] = 'Registro não encontrado.';
-                return $array;
+                $array['error'] = 'Status não encontrado.';
+                return response()->json($array);
             }
-
-            // Atualiza o registro com os novos dados
+    
             $status->nome = $request->input('nome');
             $status->save();
-
+    
             $array['success'] = 'Registro atualizado com sucesso!';
+            $array['data'] = [
+                'id' => $status->id,
+                'nome' => $status->nome
+            ];
         } catch (\Exception $e) {
-            // Captura e exibe o erro se algo der errado
             $array['error'] = 'Ocorreu um erro ao atualizar o registro: ' . $e->getMessage();
         }
+    
+        return response()->json($array);
     }
+    
 
     public function delete($id) {
         $array = ['error' => '', 'success' => ''];
@@ -111,6 +120,6 @@ class StatusController extends Controller
             $array['error'] = 'Ocorreu um erro ao deletar o registro: ' . $e->getMessage();
         }
 
-        return $array;
+        return response()->json($array);
     }
 }

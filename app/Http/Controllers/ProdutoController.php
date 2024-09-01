@@ -16,7 +16,7 @@ class ProdutoController extends Controller
             $produto = Produto::all();
 
             // Armazena os registros no array de resposta
-            $array['status'] = $produto;
+            $array['produtos'] = $produto;
         } catch (\Exception $e) {
             // Captura e exibe o erro se algo der errado
             $array['error'] = $e->getMessage();
@@ -32,7 +32,7 @@ class ProdutoController extends Controller
         // Validação dos dados de entrada
         $validator = Validator::make($request->all(), [
             'nome' => 'required|string|max:255',
-            'valor' => 'required'
+            'valor' => 'required|numeric'
         ]);
 
         if ($validator->fails()) {
@@ -43,59 +43,69 @@ class ProdutoController extends Controller
         try {
             // Criação de um novo registro
             $nome = $request->input('nome');
-            $valor = $request->input('valor');
+            $valor = (float) $request->input('valor');
+
 
             $newProduto = new Produto();
             $newProduto->nome = $nome;
             $newProduto->valor = $valor;
             $newProduto->save();
 
-            // Adiciona uma mensagem de sucesso
-            $array['success'] = 'Registro inserido com sucesso!';
+
+             $array['success'] = 'Registro inserido com sucesso!';
+             $array['data'] = [
+                 'id' => $newProduto->id,
+                 'nome' => $newProduto->nome,
+                 'valor' => $newProduto->valor
+             ];
         } catch (\Exception $e) {
             // Captura e exibe o erro se algo der errado
             $array['error'] = 'Ocorreu um erro ao inserir o registro: ' . $e->getMessage();
         }
 
-        return $array;
+        return response()->json($array);
     }
 
-    public function update($id, Request $request) {
-        $array = ['error' => '', 'success' => ''];
-
+    public function update(Request $request, $id) {
+        $array = ['error' => ''];
+    
         // Validação dos dados de entrada
         $validator = Validator::make($request->all(), [
             'nome' => 'required|string|max:255',
-            'valor' => 'required|numeric|min:0.01'
+            'valor' => 'required|numeric'
         ]);
-
+    
         if ($validator->fails()) {
             $array['error'] = $validator->errors()->first();
-            return $array;
+            return response()->json($array);
         }
-
+    
         try {
-            // Encontra o registro pelo ID
+            // Atualização do registro
             $produto = Produto::find($id);
-
+    
             if (!$produto) {
-                $array['error'] = 'Registro não encontrado.';
-                return $array;
+                $array['error'] = 'Produto não encontrado.';
+                return response()->json($array);
             }
-
-            // Atualiza o registro com os novos dados
+    
             $produto->nome = $request->input('nome');
             $produto->valor = $request->input('valor');
-            
             $produto->save();
-
+    
             $array['success'] = 'Registro atualizado com sucesso!';
+            $array['data'] = [
+                'id' => $produto->id,
+                'nome' => $produto->nome,
+                'valor' => $produto->valor
+            ];
         } catch (\Exception $e) {
-            // Captura e exibe o erro se algo der errado
             $array['error'] = 'Ocorreu um erro ao atualizar o registro: ' . $e->getMessage();
         }
+    
+        return response()->json($array);
     }
-
+    
     public function delete($id) {
         $array = ['error' => '', 'success' => ''];
 
