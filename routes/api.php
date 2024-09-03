@@ -70,5 +70,5 @@ Route::middleware('auth:api')->group(function() { // apenas se estiver logado
     Route::put('/funcao/{id}', [FuncaoController::class, 'update']);
     Route::delete('/funcao/{id}', [FuncaoController::class, 'delete']);
 
-    Route::get('/user', [UserController::class, 'getAll']);
+    Route::get('/users', [UserController::class, 'getAll']);
 });
