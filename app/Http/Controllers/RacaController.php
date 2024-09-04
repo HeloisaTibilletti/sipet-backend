@@ -30,6 +30,11 @@ class RacaController extends Controller
     public function insert(Request $request) {
         $array = ['error' => ''];
 
+        if (auth()->user()->id_funcao != 1) {
+            $array['error'] = 'Acesso negado. Voce nao tem permissao para adicionar registros.';
+            return response()->json($array, 403); // Retorna 403 Forbidden
+        }
+
         // Validação dos dados de entrada
         $validator = Validator::make($request->all(), [
             'nome' => 'required|string|max:255'
@@ -65,6 +70,11 @@ class RacaController extends Controller
     public function update($id, Request $request) {
         $array = ['error' => '', 'success' => ''];
 
+        if (auth()->user()->id_funcao != 1) {
+            $array['error'] = 'Acesso negado. Voce nao tem permissao para editar registros.';
+            return response()->json($array, 403); // Retorna 403 Forbidden
+        }
+
         // Validação dos dados de entrada
         $validator = Validator::make($request->all(), [
             'nome' => 'required|string|max:255'
@@ -99,6 +109,11 @@ class RacaController extends Controller
 
     public function delete($id) {
         $array = ['error' => '', 'success' => ''];
+
+        if (auth()->user()->id_funcao != 1) {
+            $array['error'] = 'Acesso negado. Voce nao tem permissao para adicionar registros.';
+            return response()->json($array, 403); // Retorna 403 Forbidden
+        }
     
         try {
             // Encontra o registro pelo ID
