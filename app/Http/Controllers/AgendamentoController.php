@@ -13,7 +13,7 @@ class AgendamentoController extends Controller
         $array = ['error' => ''];
 
         try {
-            // Obtém todos os registros da tabela raca
+            
             $agendamento = Agendamento::all();
 
             // Armazena os registros no array de resposta
@@ -27,74 +27,74 @@ class AgendamentoController extends Controller
     }
 
 
-    public function insert(Request $request) {
-        $array = ['error' => ''];
+    public function insert(Request $request)
+{
+    $array = ['error' => ''];
 
     // Validação dos dados
     $validator = Validator::make($request->all(), [
         'id_cliente' => 'required|exists:clientes,id',
         'id_pet' => 'required|exists:pets,id',
-        'id_raca' => 'required|exists:racas,id',
         'id_user' => 'required|exists:users,id',
         'id_status' => 'required|exists:status,id',
-        'id_produto' => 'required|array',
-        'id_produto.*' => 'exists:produtos,id',
+        'id_produto' => 'required|array', // Deve ser um array
+        'id_produto.*' => 'exists:produtos,id', // Cada produto deve existir
         'data_reserva' => 'required|date',
         'horario_reserva' => 'required|date_format:H:i',
+        'valor_total' => 'required|numeric',
         'observacoes' => 'nullable|string|max:255',
         'transporte' => 'required|boolean',
     ]);
 
     if ($validator->fails()) {
         $array['error'] = $validator->errors()->first();
-        return $array;
+        return response()->json($array);
     }
 
     try {
-
-        // Verificar o número total de agendamentos do dia atual
-        $hoje = now()->startOfDay(); // Início do dia
-        $agendamentosHoje = Agendamento::whereBetween('created_at', [$hoje, now()])->count();
-
-        if ($agendamentosHoje >= 10) {
-            $array['error'] = 'Não é possível criar mais de 10 agendamentos por dia.';
-            return $array;
-        }
-
-        // Obter produtos e preços
-        $produtos = Produto::whereIn('id', $request->input('id_produto'))->get();
-        
-        // Calcular o valor total dos produtos
-        $valorTotal = $produtos->sum('preco');
-        
-        // Adicionar custo de transporte se necessário
-        if ($request->input('transporte')) {
-            $valorTotal += 15; // Adiciona R$15 se o transporte estiver ativado
-        }
-
-        // Criar um novo pedido
+        // Criar um novo agendamento
         $newAgendamento = new Agendamento();
         $newAgendamento->id_cliente = $request->input('id_cliente');
         $newAgendamento->id_pet = $request->input('id_pet');
-        $newAgendamento->id_raca = $request->input('id_raca');
         $newAgendamento->id_user = $request->input('id_user');
         $newAgendamento->id_status = $request->input('id_status');
         $newAgendamento->data_reserva = $request->input('data_reserva');
         $newAgendamento->horario_reserva = $request->input('horario_reserva');
         $newAgendamento->observacoes = $request->input('observacoes');
-        $newAgendamento->transporte = $request->input('transporte');
+        $newAgendamento->transporte = $request->boolean('transporte');
+
+        // Calcular o valor total dos produtos
+        $produtos = Produto::whereIn('id', $request->input('id_produto'))->get();
+        $valorTotal = $produtos->sum('preco');
+
+        if ($newAgendamento->transporte) {
+            $valorTotal += 15; 
+        }
+
         $newAgendamento->valor_total = $valorTotal;
+
+        // Log para depuração
+        \Log::info('Valor total calculado:', ['valor_total' => $valorTotal]);
+
+        // Salvar o agendamento
         $newAgendamento->save();
 
-        // Adiciona uma mensagem de sucesso
-        $array['success'] = 'Pedido criado com sucesso!';
+        // Associar os produtos ao agendamento
+        $newAgendamento->produtos()->attach($request->input('id_produto'));
+
+        // Log após salvar
+        \Log::info('Agendamento salvo:', ['agendamento' => $newAgendamento]);
+
+        $array['success'] = 'Agendamento criado com sucesso!';
     } catch (\Exception $e) {
-        // Captura e exibe o erro se algo der errado
-        $array['error'] = 'Ocorreu um erro ao criar o pedido: ' . $e->getMessage();
+        \Log::error('Erro ao criar agendamento:', ['message' => $e->getMessage()]);
+        $array['error'] = 'Erro ao criar agendamento: ' . $e->getMessage();
     }
 
-        return $array;
-    }
+    return response()->json($array);
+}
+
+
 
 
     public function cancel($id)

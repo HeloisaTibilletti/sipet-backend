@@ -23,7 +23,7 @@ Route::post('/auth/login', [AuthController::class, 'login']); // acessível apen
 Route::post('/auth/register', [AuthController::class, 'register']); // acessível apenas quando não está logado
 
 // Grupo de rotas protegidas por middleware
-Route::middleware(['auth:api', 'check.permissions'])->group(function() {
+Route::middleware(['auth:api'])->group(function() {
     // Rotas para autenticação e controle de usuário
     Route::post('/auth/validate', [AuthController::class, 'validateToken']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
@@ -34,6 +34,8 @@ Route::middleware(['auth:api', 'check.permissions'])->group(function() {
     Route::get('/pets', [PetsController::class, 'getAll']);
     Route::post('/pets', [PetsController::class, 'insert']);
     Route::delete('/pets/{id}', [PetsController::class, 'delete']);
+    Route::put('/pets/{id}', [PetsController::class, 'update']);
+
 
     // Rotas para AGENDAMENTO
     Route::get('/agendamentos', [AgendamentoController::class, 'getAll']);

@@ -77,31 +77,37 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-    {
-        // Valida os dados de entrada
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string',
-            'password' => 'required'
-        ]);
+{
+    // Valida os dados de entrada
+    $validator = Validator::make($request->all(), [
+        'email' => 'required|string',
+        'password' => 'required'
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()->first()], 400);
-        }
-
-        // Tenta autenticar o usuário
-        $credentials = $request->only('email', 'password');
-        $token = auth()->attempt($credentials);
-
-        if (!$token) {
-            return response()->json(['error' => 'Email e/ou senha estão incorretos.'], 401);
-        }
-
-        // Retorna o token e as informações do usuário
-        return response()->json([
-            'token' => $token,
-            'user' => auth()->user()
-        ]);
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()->first()], 400);
     }
+
+    // Tenta autenticar o usuário
+    $credentials = $request->only('email', 'password');
+    $token = auth()->attempt($credentials);
+
+    // Verifica se o token foi gerado com sucesso
+    if (!$token) {
+        return response()->json([
+            'error' => 'Email e/ou senha estão incorretos.',
+            'debug' => 'Falha na autenticação: credenciais inválidas ou erro no token.',
+        ], 401);
+    }
+
+    // Retorna o token e as informações do usuário
+    return response()->json([
+        'token' => $token,
+        'user' => auth()->user(),
+        'debug' => 'Autenticação bem-sucedida.'  // Debug para saber que o login foi bem-sucedido
+    ]);
+}
+
 
     public function validateToken()
     {
@@ -137,7 +143,7 @@ class AuthController extends Controller
         $array = ['error' => '', 'success' => ''];
 
         if (auth()->user()->id_funcao != 1) {
-            $array['error'] = 'Acesso negado. Voce nao tem permissao para excluir registros.';
+            $array['error'] = 'Acesso negado. Voce nao tem permissao para adicionar registros.';
             return response()->json($array, 403); // Retorna 403 Forbidden
         }
 

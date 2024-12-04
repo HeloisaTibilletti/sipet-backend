@@ -77,13 +77,12 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_cliente');  // Referencia à tabela 'clientes'
             $table->unsignedBigInteger('id_pet');     // Referencia à tabela 'pets'
-            $table->unsignedBigInteger('id_raca');    // Referencia à tabela 'racas'
+
             $table->unsignedBigInteger('id_user'); // Referencia à tabela 'funcionarios'
             $table->unsignedBigInteger('id_status');
-            $table->unsignedBigInteger('id_produto');
             $table->date('data_reserva');
             $table->time('horario_reserva');   
-            $table->string('valor_total');
+            $table->float('valor_total');
             $table->string('observacoes')->nullable();
             $table->boolean('transporte')->nullable();     
         
@@ -91,8 +90,6 @@ return new class extends Migration
             $table->foreign('id_cliente')->references('id')->on('clientes')->onDelete('cascade');
             $table->foreign('id_status')->references('id')->on('status')->onDelete('cascade');
             $table->foreign('id_pet')->references('id')->on('pets')->onDelete('cascade');
-            $table->foreign('id_raca')->references('id')->on('racas')->onDelete('cascade');
-            $table->foreign('id_produto')->references('id')->on('produtos')->onDelete('cascade');
             $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
         
             $table->timestamps(); // Adiciona as colunas created_at e updated_at

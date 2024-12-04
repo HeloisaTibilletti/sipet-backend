@@ -46,8 +46,8 @@ class Agendamento extends Model
         return $this->belongsTo(User::class, 'id_funcionario');
     }
 
-    public function produto()
+    public function produtos()
     {
-        return $this->belongsTo(Produto::class, 'id_produto');
+        return $this->belongsToMany(Produto::class, 'agendamento_produto', 'agendamento_id', 'produto_id');
     }
 }

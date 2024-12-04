@@ -13,6 +13,6 @@ class Produto extends Model
 
     public function agendamentos()
     {
-        return $this->hasMany(Agendamento::class, 'id_produto');
+        return $this->belongsToMany(Agendamento::class, 'agendamento_produto', 'produto_id', 'agendamento_id');
     }
 }

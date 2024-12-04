@@ -34,12 +34,12 @@ class PetsController extends Controller
             'nome' => 'required|string|max:255',
             'data_nasc' => 'required|date',
             'raca_id' => 'required|exists:racas,id',
-            'sexo' => 'required|string|in:M,F', // M para macho, F para fêmea (ajuste conforme necessário)
+            'sexo' => 'required|string|in:M,F', 
             'especie' => 'required|string|max:255',
-            'porte' => 'required|string|max:255', // Pode ser 'Pequeno', 'Médio', 'Grande', etc.
+            'porte' => 'required|string|max:255', 
             'condicoes_fisicas' => 'required|string|max:255',
             'tratamentos_especiais' => 'nullable|string|max:255',
-            'cliente_id' => 'required|exists:clientes,id' // Verifica se o cliente_id existe na tabela clientes
+            'cliente_id' => 'required|exists:clientes,id' 
                 ]);
 
             if ($validator->fails()) {
@@ -50,13 +50,13 @@ class PetsController extends Controller
                     // Criação de um novo registro
                     $nome = $request->input('nome');
                     $dataNasc = $request->input('data_nasc');
-                    $raca_id = $request->input('raca_id'); // Assumindo que `raca_id` é a chave estrangeira
+                    $raca_id = $request->input('raca_id'); 
                     $sexo = $request->input('sexo');
                     $especie = $request->input('especie');
                     $porte = $request->input('porte');
                     $condicoesFisicas = $request->input('condicoes_fisicas');
                     $tratamentosEspeciais = $request->input('tratamentos_especiais');
-                    $clienteId = $request->input('cliente_id'); // Chave estrangeira para o cliente
+                    $clienteId = $request->input('cliente_id'); 
                 
                     $newPet = new Pets();
                     $newPet->nome = $nome;
@@ -83,76 +83,70 @@ class PetsController extends Controller
 
     public function update($id, Request $request) {
         $array = ['error' => '', 'success' => ''];
-
+    
         // Validação dos dados de entrada
         $validator = Validator::make($request->all(), [
             'nome' => 'required|string|max:255',
             'data_nasc' => 'required|date',
-            'raca' => 'required|exists:racas,id',
-            'sexo' => 'required|string|in:M,F', // M para macho, F para fêmea (ajuste conforme necessário)
+            'raca_id' => 'required|exists:racas,id',  // Certifique-se de que o campo correto esteja sendo enviado
+            'sexo' => 'required|string|in:M,F',
             'especie' => 'required|string|max:255',
-            'porte' => 'required|string|max:255', // Pode ser 'Pequeno', 'Médio', 'Grande', etc.
+            'porte' => 'required|string|max:255',
             'condicoes_fisicas' => 'required|string|max:255',
             'tratamentos_especiais' => 'nullable|string|max:255',
-            'cliente_id' => 'required|exists:clientes,id' // Verifica se o cliente_id existe na tabela clientes
+            'cliente_id' => 'required|exists:clientes,id',
         ]);
-
+    
         if ($validator->fails()) {
             $array['error'] = $validator->errors()->first();
             return $array;
         }
-
+    
         try {
-            // Encontra o registro pelo ID
-            $pets = Pets::find($id);
-
-            if (!$pets) {
-                $array['error'] = 'Registro não encontrado.';
-                return $array;
+            $pet = Pets::find($id);
+            if (!$pet) {
+                $array['error'] = 'Pet não encontrado.';
+                return response()->json($array, 404);  // Retorna erro 404 se o pet não for encontrado
             }
-
-           // Atualiza os campos do pet com os dados recebidos na requisição
-            $pets->nome = $request->input('nome');
-            $pets->data_nasc = $request->input('data_nasc');
-            $pets->raca_id = $request->input('raca_id'); // Atualiza a chave estrangeira da raça
-            $pets->sexo = $request->input('sexo');
-            $pets->especie = $request->input('especie');
-            $pets->porte = $request->input('porte');
-            $pets->condicoes_fisicas = $request->input('condicoes_fisicas');
-            $pets->tratamentos_especiais = $request->input('tratamentos_especiais');
-            $pets->cliente_id = $request->input('cliente_id'); // Atualiza a chave estrangeira do cliente
-
-            // Salva as alterações no banco de dados
-            $pets->save();
-
-        $array['success'] = 'Registro atualizado com sucesso!';
+    
+            // Atualizando os dados do pet
+            $pet->update([
+                'nome' => $request->input('nome'),
+                'data_nasc' => $request->input('data_nasc'),
+                'raca_id' => $request->input('raca_id'),
+                'sexo' => $request->input('sexo'),
+                'especie' => $request->input('especie'),
+                'porte' => $request->input('porte'),
+                'condicoes_fisicas' => $request->input('condicoes_fisicas'),
+                'tratamentos_especiais' => $request->input('tratamentos_especiais'),
+                'cliente_id' => $request->input('cliente_id'),
+            ]);
+    
+            $array['success'] = 'Pet atualizado com sucesso!';
+            return response()->json($array, 200);  // Resposta de sucesso
+    
         } catch (\Exception $e) {
-            // Captura e exibe o erro se algo der errado
-            $array['error'] = 'Ocorreu um erro ao atualizar o registro: ' . $e->getMessage();
+            $array['error'] = 'Erro ao atualizar: ' . $e->getMessage();
+            return response()->json($array, 500);  // Erro 500 em caso de falha
         }
     }
+    
+    
 
     public function delete($id) {
-        $array = ['error' => '', 'success' => ''];
-
         try {
-            // Encontra o registro pelo ID
-            $pets = Pets::find($id);
-
-            if (!$pets) {
-                $array['error'] = 'Registro não encontrado.';
-                return $array;
+            $pet = Pets::find($id);
+    
+            if (!$pet) {
+                return response()->json(['error' => 'Registro não encontrado.'], 404);
             }
+    
+            $pet->delete();
 
-            // Deleta o registro
-            $pets->delete();
-
-            $array['success'] = 'Registro deletado com sucesso!';
+            return response()->json(['success' => 'Registro deletado com sucesso!'], 200);
         } catch (\Exception $e) {
-            // Captura e exibe o erro se algo der errado
-            $array['error'] = 'Ocorreu um erro ao deletar o registro: ' . $e->getMessage();
+            return response()->json(['error' => 'Ocorreu um erro ao deletar o registro: ' . $e->getMessage()], 500);
         }
-
-        return $array;
     }
+    
 }
