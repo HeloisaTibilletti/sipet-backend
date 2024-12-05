@@ -45,6 +45,7 @@ class Agendamento extends Model
     {
         return $this->belongsTo(User::class, 'id_funcionario');
     }
+    
 
     public function produtos()
     {

@@ -9,17 +9,16 @@ use Validator;
 
 class AgendamentoController extends Controller
 {
-    public function getAll() {
+    public function getAll()
+    {
         $array = ['error' => ''];
 
         try {
-            
-            $agendamento = Agendamento::all();
+            // Inclui os dados completos de cliente e pet
+            $agendamentos = Agendamento::with(['cliente', 'pet'])->get();
 
-            // Armazena os registros no array de resposta
-            $array['agendamentos'] = $agendamento;
+            $array['agendamentos'] = $agendamentos;  // Retorna todos os dados, incluindo cliente e pet
         } catch (\Exception $e) {
-            // Captura e exibe o erro se algo der errado
             $array['error'] = $e->getMessage();
         }
 
@@ -38,10 +37,10 @@ class AgendamentoController extends Controller
         'id_user' => 'required|exists:users,id',
         'id_status' => 'required|exists:status,id',
         'id_produto' => 'required|array', // Deve ser um array
-        'id_produto.*' => 'exists:produtos,id', // Cada produto deve existir
+        'id_produto.*.id' => 'required|exists:produtos,id', // O ID do produto deve existir
+        'id_produto.*.valor' => 'required|numeric|min:0', // O valor do produto deve ser numérico
         'data_reserva' => 'required|date',
         'horario_reserva' => 'required|date_format:H:i',
-        'valor_total' => 'required|numeric',
         'observacoes' => 'nullable|string|max:255',
         'transporte' => 'required|boolean',
     ]);
@@ -63,27 +62,27 @@ class AgendamentoController extends Controller
         $newAgendamento->observacoes = $request->input('observacoes');
         $newAgendamento->transporte = $request->boolean('transporte');
 
-        // Calcular o valor total dos produtos
-        $produtos = Produto::whereIn('id', $request->input('id_produto'))->get();
-        $valorTotal = $produtos->sum('preco');
+        // Calcular valor total dos produtos
+        $produtos = $request->input('id_produto');
+        $valorTotal = array_sum(array_column($produtos, 'valor')); // Soma os valores enviados
 
+        // Adicionar taxa de transporte, se necessário
         if ($newAgendamento->transporte) {
-            $valorTotal += 15; 
+            $valorTotal += 15;
         }
 
         $newAgendamento->valor_total = $valorTotal;
 
-        // Log para depuração
-        \Log::info('Valor total calculado:', ['valor_total' => $valorTotal]);
-
         // Salvar o agendamento
         $newAgendamento->save();
 
-        // Associar os produtos ao agendamento
-        $newAgendamento->produtos()->attach($request->input('id_produto'));
+        // Associar os produtos ao agendamento com os valores individuais
+        $produtosAttach = [];
+        foreach ($produtos as $produto) {
+            $produtosAttach[$produto['id']] = ['valor' => $produto['valor']];
+        }
 
-        // Log após salvar
-        \Log::info('Agendamento salvo:', ['agendamento' => $newAgendamento]);
+        $newAgendamento->produtos()->attach($produtosAttach);
 
         $array['success'] = 'Agendamento criado com sucesso!';
     } catch (\Exception $e) {
@@ -95,9 +94,7 @@ class AgendamentoController extends Controller
 }
 
 
-
-
-    public function cancel($id)
+        public function cancel($id)
     {
         $array = ['error' => '', 'success' => ''];
 
@@ -129,5 +126,29 @@ class AgendamentoController extends Controller
 
         return $array;
     }
+
+    public function update(Request $request, $id)
+    {
+        $agendamento = Agendamento::find($id);
+        if (!$agendamento) {
+            return response()->json(['error' => 'Agendamento não encontrado'], 404);
+        }
+
+        $agendamento->id_status = $request->id_status; // Atualiza o status
+        $agendamento->save();
+
+        return response()->json(['success' => true, 'agendamento' => $agendamento]);
+    }
+
+    public function getProdutos($agendamento_id)
+    {
+        // Recuperar o agendamento com seus produtos relacionados
+        $agendamento = Agendamento::with('produtos')->find($agendamento_id);
+
+        // Retornar os produtos em formato JSON
+        return response()->json($agendamento->produtos);
+    }
+
+
 
 }

@@ -42,6 +42,7 @@ Route::middleware(['auth:api'])->group(function() {
     Route::post('/agendamentos', [AgendamentoController::class, 'insert']);
     Route::put('/agendamentos/{id}', [AgendamentoController::class, 'update']);
     Route::delete('/agendamentos/{id}', [AgendamentoController::class, 'delete']);
+    Route::get('/agendamentos/{id}/produtos', [AgendamentoController::class, 'getProdutos']);
 
     // Rotas para RAÇAS
     Route::get('/racas', [RacaController::class, 'getAll']);
