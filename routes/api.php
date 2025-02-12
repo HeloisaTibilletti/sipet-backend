@@ -23,7 +23,7 @@ Route::post('/auth/login', [AuthController::class, 'login']); // acessível apen
 Route::post('/auth/register', [AuthController::class, 'register']); // acessível apenas quando não está logado
 
 // Grupo de rotas protegidas por middleware
-Route::middleware(['auth:api'])->group(function() {
+Route::middleware(['auth:api', 'check.permissions'])->group(function() {
     // Rotas para autenticação e controle de usuário
     Route::post('/auth/validate', [AuthController::class, 'validateToken']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
@@ -43,6 +43,7 @@ Route::middleware(['auth:api'])->group(function() {
     Route::put('/agendamentos/{id}', [AgendamentoController::class, 'update']);
     Route::delete('/agendamentos/{id}', [AgendamentoController::class, 'delete']);
     Route::get('/agendamentos/{id}/produtos', [AgendamentoController::class, 'getProdutos']);
+    
 
     // Rotas para RAÇAS
     Route::get('/racas', [RacaController::class, 'getAll']);
@@ -67,6 +68,7 @@ Route::middleware(['auth:api'])->group(function() {
     Route::post('/clientes', [ClienteController::class, 'insert']);
     Route::put('/clientes/{id}', [ClienteController::class, 'update']);
     Route::delete('/clientes/{id}', [ClienteController::class, 'delete']);
+    Route::post('/clientes/checkEmailExists', [ClienteController::class, 'checkEmailExists']);
 
     // Rotas para FUNCIONÁRIOS
     Route::get('/funcao', [FuncaoController::class, 'getAll']);

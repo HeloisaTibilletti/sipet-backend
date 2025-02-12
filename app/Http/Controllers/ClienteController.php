@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Validator;
 
 class ClienteController extends Controller
 {
-    public function getAll() {
+    public function getAll()
+    {
         $array = ['error' => ''];
 
         try {
@@ -26,14 +27,15 @@ class ClienteController extends Controller
     }
 
 
-    public function insert(Request $request) {
+    public function insert(Request $request)
+    {
         $array = ['error' => ''];
 
         // Validação dos dados de entrada
         $validator = Validator::make($request->all(), [
             'nome' => 'required|string|max:255',
             'sobrenome' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:clientes,email',
+            'email' => 'required|string|email|max:255',
             'endereco' => 'required|string|max:255',
             'telefone' => 'required|digits_between:8,15'
         ]);
@@ -48,9 +50,9 @@ class ClienteController extends Controller
             $nome = $request->input('nome');
             $sobrenome = $request->input('sobrenome');
             $email = $request->input('email');
-            $endereco = $request->input('endereco');    
-            $telefone = $request->input('telefone');   
-    
+            $endereco = $request->input('endereco');
+            $telefone = $request->input('telefone');
+
             $newCliente = new Cliente();
             $newCliente->nome = $nome;
             $newCliente->sobrenome = $sobrenome;
@@ -58,8 +60,8 @@ class ClienteController extends Controller
             $newCliente->endereco = $endereco;
             $newCliente->telefone = $telefone;
 
-            $newCliente->save(); 
-    
+            $newCliente->save();
+
             // Adiciona uma mensagem de sucesso
             $array['success'] = 'Registro inserido com sucesso!';
         } catch (\Exception $e) {
@@ -70,48 +72,53 @@ class ClienteController extends Controller
         return $array;
     }
 
-    public function update($id, Request $request) {
-        $array = ['error' => '', 'success' => ''];
+    public function update($id, Request $request)
+{
+    $array = ['error' => '', 'success' => ''];
 
-        // Validação dos dados de entrada
-        $validator = Validator::make($request->all(), [
-            'nome' => 'required|string|max:255',
-            'sobrenome' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:clientes,email',
-            'endereco' => 'required|string|max:255',
-            'telefone' => 'required|digits_between:8,15'
-        ]);
+    // Validação dos dados de entrada
+    $validator = Validator::make($request->all(), [
+        'nome' => 'required|string|max:255',
+        'sobrenome' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255',
+        'endereco' => 'required|string|max:255',
+        'telefone' => 'required|digits_between:8,15'
+    ]);
 
-        if ($validator->fails()) {
-            $array['error'] = $validator->errors()->first();
-            return $array;
-        }
-
-        try {
-            // Encontra o registro pelo ID
-            $cliente = Cliente::find($id);
-
-            if (!$cliente) {
-                $array['error'] = 'Registro não encontrado.';
-                return $array;
-            }
-
-            // Atualiza o registro com os novos dados
-            $cliente->nome = $request->input('nome');
-            $cliente = $request->input('sobrenome');
-            $cliente = $request->input('email');
-            $cliente = $request->input('endereco');
-            $cliente = $request->input('telefone');
-            $cliente->save();
-
-            $array['success'] = 'Registro atualizado com sucesso!';
-        } catch (\Exception $e) {
-            // Captura e exibe o erro se algo der errado
-            $array['error'] = 'Ocorreu um erro ao atualizar o registro: ' . $e->getMessage();
-        }
+    if ($validator->fails()) {
+        $array['error'] = $validator->errors()->first();
+        return response()->json($array, 400);  // Retorne com status 400 de erro de validação
     }
 
-    public function delete($id) {
+    try {
+        // Encontra o registro pelo ID
+        $cliente = Cliente::find($id);
+
+        if (!$cliente) {
+            $array['error'] = 'Registro não encontrado.';
+            return response()->json($array, 404);  // Retorna 404 caso não encontre o cliente
+        }
+
+        // Atualiza o registro com os novos dados
+        $cliente->nome = $request->input('nome');
+        $cliente->sobrenome = $request->input('sobrenome');
+        $cliente->email = $request->input('email');
+        $cliente->endereco = $request->input('endereco');
+        $cliente->telefone = $request->input('telefone');
+        $cliente->save();
+
+        $array['success'] = 'Registro atualizado com sucesso!';
+        return response()->json($array, 200);  // Retorna sucesso com status 200
+    } catch (\Exception $e) {
+        // Captura e exibe o erro se algo der errado
+        $array['error'] = 'Ocorreu um erro ao atualizar o registro: ' . $e->getMessage();
+        return response()->json($array, 500);  // Retorna erro com status 500
+    }
+}
+
+
+    public function delete($id)
+    {
         $array = ['error' => '', 'success' => ''];
 
         try {
@@ -134,4 +141,6 @@ class ClienteController extends Controller
 
         return $array;
     }
+
+
 }

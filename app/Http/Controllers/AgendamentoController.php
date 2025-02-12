@@ -149,6 +149,8 @@ class AgendamentoController extends Controller
         return response()->json($agendamento->produtos);
     }
 
+    
+
 
 
 }

@@ -28,6 +28,16 @@ class Agendamento extends Model
         return $this->belongsTo(Cliente::class, 'id_cliente');
     }
 
+
+    public function getAgendamentos()
+    {
+        $agendamentos = Agendamento::with(['cliente', 'pet', 'status'])->get(); // Inclua o relacionamento status
+        return response()->json([
+            'list' => $agendamentos,
+        ]);
+    }
+
+
     // Relacionamento com a model Pet
     public function pet()
     {
@@ -45,10 +55,15 @@ class Agendamento extends Model
     {
         return $this->belongsTo(User::class, 'id_funcionario');
     }
-    
+
 
     public function produtos()
     {
         return $this->belongsToMany(Produto::class, 'agendamento_produto', 'agendamento_id', 'produto_id');
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'id_status');
     }
 }
